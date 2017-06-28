@@ -1,0 +1,338 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+</body>
+<div>
+    <label>
+        <input type="text" name="username" id="userName">
+    </label>
+    <label>
+        <input type="password" name="password" id="password">
+    </label>
+    <label>
+        <input type="submit" value="submit" id="submit1">
+    </label>
+</div>
+<button id="getNewestList">getNewestList</button>
+<button id="getArticleList">getArticle</button>
+<button id="getClassifyArticle">getClassifyArticle</button>
+<button id="getArticleContent">getArticleContent</button>
+<button id="getVideoType">getVideoType</button>
+<button id="isCollected">isCollected</button>
+<button id="getVideoList">getVideoList</button>
+<button id="getSubVideo">getSubVideo</button>
+<button id="getComment">getComment</button>
+<button id="sign">sign</button>
+<div id="send">
+    <input type="file" name="file"/><br>
+    <button type="submit" id="submit2">upload</button>
+</div>
+<div id="edit">
+    <input type="password" name="password">
+    <button type="submit" id="submit3">editPassword</button>
+</div>
+<button id="collect">getCollectData</button>
+
+<button id="addCollect">addCollection</button>
+<button id="cancelCollection">cancelCollection</button>
+
+<div>
+    <input type="text" name="comment" id="comment"><input type="button" value="sendComment" id="sendComment">
+</div>
+
+
+<button id="logout">logout</button>
+<script src="http://zeptojs.com/zepto.min.js"></script>
+<script>
+    $(function () {
+        var token = '';
+        var LoginData;
+        var LogoutData={};
+        $('#submit1').on('click',function () {
+            var data={};
+            data.userName = $('#userName').val();
+            data.password = $('#password').val();
+            $.ajax({
+                url: "http://192.168.1.50:8080/Auth/login",
+                type:'POST',
+                data:JSON.stringify(data),
+                xhrFields:{withCredentials:true},
+                dataType:'json',
+                contentType: 'application/json',
+                success:function (res) {
+                    token = res.data.token;//data: token , userName-->
+                    console.log(res);
+                    LogoutData.token = res.data.token;
+                    LogoutData.userName = res.data.userName;
+                    //console.log("http://192.168.1.35:8080/upload/token/" + token);
+                    LoginData = res;
+                }
+            });
+        });
+
+        $('#submit3').on('click', function () {
+
+            var editInfo = {
+                password: $('#edit > input').val()
+            };
+            console.log(editInfo.password);
+            $.ajax({
+                url:"http://192.168.1.50:8080/Auth/editPassWord/token/" + token,
+                type:'POST',
+                data:JSON.stringify(editInfo),
+                crossDomain: true,
+                xhrFields:{withCredentials:true},
+                cache:false,
+                contentType:'application/json',
+                success:function (data) {
+                    console.log(data);
+                }
+            });
+        });
+
+        $('#isCollected').on('click', function () {
+            $.ajax({
+                url:"http://192.168.1.50:8080/videoCollection/1013/" + token,
+                type:'POST',
+                xhrFields:{withCredentials:true},
+                dataType:'json',
+                contentType:'application/json',
+                success:function (data) {
+                    console.log(data);
+                }
+            });
+        });
+
+        $('#submit2').on('click',function () {
+            var formData = new FormData();
+            var file = $("#send input")[0].files[0];
+            formData.append('file', file);
+            console.log(formData);
+            $.ajax({
+                url:"http://192.168.1.50:8080/upload/uploadAvatar/token/" + token,
+                type:'POST',
+                data:formData,
+                crossDomain: true,
+                xhrFields:{withCredentials:true},
+                cache:false,
+                contentType: false,
+                processData:false,
+                success:function (data) {
+                    console.log(data);
+                }
+            });
+        });
+
+        $('#logout').on('click', function () {
+            $.ajax({
+                url:"http://192.168.1.50:8080/Auth/logout",
+                type:'POST',
+                data:JSON.stringify(LogoutData),
+                xhrFields:{withCredentials:true},
+                dataType:'json',
+                contentType: 'application/json',
+                success:function (res) {
+                    console.log(res);
+                    /*token = "";
+                     LoginData = "";*/
+                }
+            });
+        });
+
+        $("#getNewestList").on('click', function () {
+            $.ajax({
+                url:"http://192.168.1.50:8080/article/getNewestArticle/token/"+token,
+                type:'POST',
+                xhrFields:{withCredentials:true},
+                dataType:'json',
+                contentType:'application/json',
+                success:function (res) {
+                    console.log(res);
+                }
+            });
+        });
+
+        $("#getArticleList").on('click', function () {
+            var articleData = {};
+            articleData.currentPage = 1;
+            articleData.pageSize = 5;
+            articleData.searchType = "减脂方法";
+            console.log(articleData);
+            $.ajax({
+                url:"http://192.168.1.50:8080/article/getList/token/"+token,
+                type:'POST',
+                data:JSON.stringify(articleData),
+                xhrFields:{withCredentials:true},
+                dataType:'json',
+                contentType:'application/json;charset=utf-8',
+                success:function (res) {
+                    console.log(res);
+                }
+            });
+        });
+
+        $("#getClassifyArticle").on('click', function () {
+            var classifyArticleData = {};
+            classifyArticleData.currentPage = 1;
+            classifyArticleData.pageSize = 6;
+            $.ajax({
+                url:"http://192.168.1.50:8080/article/getClassifyArticle/token/"+token,
+                type:'POST',
+                data:JSON.stringify(classifyArticleData),
+                xhrFields:{withCredentials:true},
+                dataType:'json',
+                contentType:'application/json',
+                success:function (res) {
+                    console.log(res);
+                }
+            });
+        });
+
+        $("#getArticleContent").on('click', function () {
+            $.ajax({
+                url:"http://192.168.1.50:8080/article/2001/detail/token/"+token,
+                type:'POST',
+                xhrFields:{withCredentials:true},
+                dataType:'json',
+                contentType:'application/json',
+                success:function (res) {
+                    console.log(res);
+                }
+            })
+        });
+
+        $("#getVideoType").on('click', function () {
+            $.ajax({
+                url:"http://192.168.1.50:8080/video/getVideoType/token/"+token,
+                type:'POST',
+                xhrFields:{withCredentials:true},
+                dataType:'json',
+                contentType:'application/json',
+                success:function (res) {
+                    console.log(res);
+                }
+            })
+        });
+
+        $("#getSubVideo").on('click', function () {
+            $.ajax({
+                url:"http://192.168.1.50:8080/video/1002/detail/token/"+token,
+                type:'POST',
+                xhrFields:{withCredentials:true},
+                dataType:'json',
+                contentType:'application/json',
+                success:function (res) {
+                    console.log(res);
+                }
+            })
+        });
+
+        $("#getVideoList").on('click', function () {
+            var videoData = {};
+            videoData.currentPage = 1;
+            videoData.pageSize = 5;
+            videoData.searchType = 'type1';
+            $.ajax({
+                url:"http://192.168.1.50:8080/video/getVideoList/token/"+token,
+                type:'POST',
+                data:JSON.stringify(videoData),
+                xhrFields:{withCredentials:true},
+                dataType:'json',
+                contentType:'application/json',
+                success:function (res) {
+                    console.log(res);
+                }
+            });
+        });
+
+        $("#sendComment").on('click', function () {
+            var commentData = {};
+            commentData.comment = $("#comment").val();
+            commentData.articleId = 2001;
+            $.ajax({
+                url:"http://192.168.1.50:8080/article/addComment/token/"+ token,
+                type:'POST',
+                data:JSON.stringify(commentData),
+                xhrFields:{withCredentials:true},
+                dataType:'json',
+                contentType:'application/json',
+                success:function (res) {
+                    console.log(res);
+                }
+            })
+        });
+
+        $("#getComment").on('click', function () {
+            $.ajax({
+                url:"http://192.168.1.50:8080/article/2001/getMessages/token/"+token,   //$(this).attr('id')
+                type:'POST',
+                xhrFields:{withCredentials:true},
+                dataType:'json',
+                contentType:'application/json',
+                success:function (res) {
+                    console.log(res);
+                }
+            })
+        });
+
+        $("#collect").on('click', function () {
+            $.ajax({
+                url:"http://192.168.1.50:8080/videoCollection/getCollectionList/token/"+token,
+                type:'POST',
+                xhrFields:{withCredentials:true},
+                dataType:'json',
+                contentType:'application/json',
+                success:function (res) {
+                    console.log(res);
+                }
+            }) ;
+        });
+
+        $("#addCollect").on('click', function () {
+            $.ajax({
+                url:"http://192.168.1.50:8080/videoCollection/"+ 1002 + "/addCollection/token/" + token,
+                type:'POST',
+                xhrFields:{withCredentials:true},
+                dataType:'json',
+                contentType:'application/json',
+                success:function (res) {
+                    console.log(res);
+                }
+            });
+        });
+
+        $("#cancelCollection").on('click', function () {
+            $.ajax({
+                url:"http://192.168.1.50:8080/videoCollection/"+ 1001 +"/cancelCollect/token/" + token,
+                type:'POST',
+                xhrFields:{withCredentials:true},
+                dataType:'json',
+                contentType:'application/json',
+                success:function (res) {
+                    console.log(res);
+                }
+            });
+        });
+
+        $("#sign").on('click', function () {
+            $.ajax({
+                url:"http://192.168.1.50:8080/Auth/sign/token/" + token,
+                type:'POST',
+                xhrFields:{withCredentials:true},
+                dataType:'json',
+                contentType:'application/json',
+                success:function (res) {
+                    console.log(res);
+                }
+            });
+        });
+    });
+
+</script>
+</body>
+</html>

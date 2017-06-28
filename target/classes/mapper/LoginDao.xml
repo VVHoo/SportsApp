@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.sport.dao.LoginDao">
+
+    <select id="queryByName" resultType="User" parameterType="String">
+        SELECT * FROM t_user WHERE userName = #{userName}
+    </select>
+
+    <select id="queryAvatar" resultType="String">
+        SELECT avatarUrl FROM t_user WHERE id = #{userId}
+    </select>
+
+    <insert id="insertAvatar">
+        UPDATE t_user SET avatarUrl= #{avatarPath} WHERE id = #{userId}
+    </insert>
+
+    <select id="getSign" resultType="java.util.HashMap">
+        SELECT admitSign, signNum FROM t_user WHERE id = #{userId}
+    </select>
+
+    <update id="updateSign">
+        UPDATE t_user SET admitSign = FALSE , signNum = signNum + 1 WHERE id = #{userId}
+    </update>
+
+    <update id="updateUser">
+        UPDATE t_user SET userName = #{userName}, sex = #{sex}, age = #{age}, birthday = #{birthday}, hometown = #{hometown} WHERE id = #{userId}
+    </update>
+
+    <update id="editPassword">
+        UPDATE t_user SET password = #{password} WHERE id = #{userId}
+    </update>
+</mapper>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.sport.dao.VideoDao">
+
+    <select id="queryVideoType" resultType="java.util.HashMap">
+        SELECT videoType, typeCover, COUNT(videoType) AS typeNum FROM t_video GROUP BY videoType
+    </select>
+
+    <select id="queryByVideoId" resultType="java.util.HashMap" parameterType="long">
+        SELECT t_video.videoTitle, t_subvideo.*
+        FROM t_subvideo
+        INNER JOIN t_video
+        ON t_subvideo.videoId = #{videoId} AND t_subvideo.videoId = t_video.videoId
+        ORDER BY t_subvideo.subVideoId
+    </select>
+
+    <select id="queryVideoByPage" resultType="Video">
+        SELECT * FROM t_video
+            <choose>
+                <when test="_parameter != null">
+                    U  WHERE concat(U.videoType, U.videoTitle) LIKE concat(concat('%', #{searchType}, '%'))
+                </when>
+                <otherwise>
+                    ORDER BY videoId DESC
+                </otherwise>
+            </choose>
+        limit #{beginning}, #{pageSize}
+    </select>
+
+</mapper>

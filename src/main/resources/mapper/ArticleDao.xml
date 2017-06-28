@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.sport.dao.ArticleDao">
+
+
+    <select id="queryNewest" resultType="Article">
+       SELECT * FROM t_article WHERE date ORDER BY date DESC LIMIT 3
+    </select>
+
+    <select id="queryById" resultType="ArticleContent" parameterType="long">
+        select * from t_articleContent
+        where articleId = #{articleId}
+    </select>
+
+    <select id="queryArticleCount" resultType="Integer">
+        SELECT COUNT(*) AS count FROM t_article WHERE category = #{searchType}
+    </select>
+
+    <select id="queryByPage" resultType="Article">
+        SELECT * FROM t_article WHERE category = #{searchType} ORDER BY date DESC limit #{beginning} ,#{pageSize}
+    </select>
+
+    <select id="queryTotalComments" resultType="Integer">
+        SELECT COUNT(*) AS count FROM t_messages WHERE articleId = #{articleId}
+    </select>
+
+    <select id="queryComments" resultType="Messages">
+        SELECT a.articleId, a.messageId, b.userName, b.avatarUrl, a.comment, a.sendTime FROM t_messages as a,t_user as b WHERE a.userId = b.id AND a.articleId = #{articleId} ORDER BY a.messageId DESC limit #{beginning}, #{pageSize}
+    </select>
+
+    <insert id="addComments">
+        INSERT INTO t_messages (userId, articleId, comment, sendTime) VALUES (#{userId}, #{articleId}, #{comment}, #{dateTime})
+    </insert>
+
+    <!--查找每种类型前两条-->
+    <select id="queryByClassify" resultType="Article">
+        SELECT a1.* FROM t_article a1
+          INNER JOIN (SELECT  a.category,a.date FROM t_article a LEFT JOIN t_article b
+          ON a.category=b.category and a.date  <![CDATA[<=]]> b.date
+          GROUP BY a.category,a.date
+          HAVING count(b.date)<![CDATA[<=]]> 2
+          )b1
+          on a1.category=b1.category AND a1.date=b1.date
+          ORDER BY a1.category, a1.date DESC
+    </select>
+
+
+</mapper>

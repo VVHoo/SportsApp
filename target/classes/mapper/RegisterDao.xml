@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.sport.dao.RegisterDao">
+
+    <insert id="saveUser" parameterType="User">
+        INSERT INTO t_user (userName, password, email, admitSign, signNum) VALUES (#{userName}, #{password}, #{email}, TRUE , 0)
+    </insert>
+
+    
+</mapper>
